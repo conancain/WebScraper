@@ -24,6 +24,10 @@ class EnvironmentInitTests(unittest.TestCase):
         result = self.environmentInit.get_yelp_review_url()
         self.assertEqual(result, "https://api.yelp.com/v3/businesses/{}/reviews")
 
+    def test_number_of_business_to_scrape(self):
+        result = self.environmentInit.get_number_of_business_to_scrape()
+        self.assertEqual(result, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

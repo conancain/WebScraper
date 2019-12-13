@@ -14,15 +14,15 @@ logger: logging
 YELP_TOKEN_KEY = "yelpToken"
 YELP_SEARCH_URL_KEY = "yelpSearchUrl"
 YELP_REVIEW_URL_KEY = "yelpReviewUrl"
+NUMBER_OF_BUSINESS_TO_SCRAPE_KEY = "numberOfBusinessToScrape"
 
 YELP_TOKEN: str
 YELP_SEARCH_URL: str
 YELP_REVIEW_URL: str
+NUMBER_OF_BUSINESS_TO_SCRAPE: int
 
 
 class EnvironmentInit:
-    def __init__(self):
-        self.read_config(_config_path)
 
     @staticmethod
     def read_config(config_file_full_path: os.path):
@@ -42,6 +42,12 @@ class EnvironmentInit:
             if YELP_REVIEW_URL_KEY in _config_json:
                 YELP_REVIEW_URL = _config_json[YELP_REVIEW_URL_KEY]
 
+            global NUMBER_OF_BUSINESS_TO_SCRAPE
+            if NUMBER_OF_BUSINESS_TO_SCRAPE_KEY in _config_json:
+                NUMBER_OF_BUSINESS_TO_SCRAPE = _config_json[NUMBER_OF_BUSINESS_TO_SCRAPE_KEY]
+
+        logger.info("EnvironmentInit: _config_json: {}".format(_config_json))
+
     @staticmethod
     def get_yelp_token() -> str:
         return YELP_TOKEN
@@ -55,9 +61,13 @@ class EnvironmentInit:
         return YELP_REVIEW_URL
 
     @staticmethod
+    def get_number_of_business_to_scrape() -> int:
+        return NUMBER_OF_BUSINESS_TO_SCRAPE
+
+    @staticmethod
     def initialize_logger(logging_directory: os.path, log_name: str):
         global logger
-        logger = logging.getLogger("YelpFusion")
+        logger = logging.getLogger(log_name)
         logger.setLevel(logging.DEBUG)
         # create file handler which logs even debug messages
         # create logging directory if doesn't exist
@@ -76,3 +86,7 @@ class EnvironmentInit:
         # add the handlers to the logger
         logger.addHandler(fh)
         logger.addHandler(ch)
+
+
+EnvironmentInit.initialize_logger(os.path.join(os.path.dirname(__file__), "logs"), "YelpFusion")
+EnvironmentInit.read_config(_config_path)

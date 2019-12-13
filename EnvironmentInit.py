@@ -9,16 +9,16 @@ from typing import Dict
 _config_path = os.path.join(os.path.dirname(__file__), "config.json")
 _config_json: Dict[str, object]
 
-logger: logging
+logger: logging = None
 
 YELP_TOKEN_KEY = "yelpToken"
 YELP_SEARCH_URL_KEY = "yelpSearchUrl"
-YELP_REVIEW_URL_KEY = "yelpReviewUrl"
+YELP_REVIEWS_URL_KEY = "yelpReviewsUrl"
 NUMBER_OF_BUSINESS_TO_SCRAPE_KEY = "numberOfBusinessToScrape"
 
 YELP_TOKEN: str
 YELP_SEARCH_URL: str
-YELP_REVIEW_URL: str
+YELP_REVIEWS_URL: str
 NUMBER_OF_BUSINESS_TO_SCRAPE: int
 
 
@@ -38,9 +38,9 @@ class EnvironmentInit:
             if YELP_SEARCH_URL_KEY in _config_json:
                 YELP_SEARCH_URL = _config_json[YELP_SEARCH_URL_KEY]
 
-            global YELP_REVIEW_URL
-            if YELP_REVIEW_URL_KEY in _config_json:
-                YELP_REVIEW_URL = _config_json[YELP_REVIEW_URL_KEY]
+            global YELP_REVIEWS_URL
+            if YELP_REVIEWS_URL_KEY in _config_json:
+                YELP_REVIEWS_URL = _config_json[YELP_REVIEWS_URL_KEY]
 
             global NUMBER_OF_BUSINESS_TO_SCRAPE
             if NUMBER_OF_BUSINESS_TO_SCRAPE_KEY in _config_json:
@@ -57,8 +57,8 @@ class EnvironmentInit:
         return YELP_SEARCH_URL
 
     @staticmethod
-    def get_yelp_review_url() -> str:
-        return YELP_REVIEW_URL
+    def get_yelp_reviews_url() -> str:
+        return YELP_REVIEWS_URL
 
     @staticmethod
     def get_number_of_business_to_scrape() -> int:
@@ -67,6 +67,9 @@ class EnvironmentInit:
     @staticmethod
     def initialize_logger(logging_directory: os.path, log_name: str):
         global logger
+        if logger:
+            logger.info("EnvironmentInit: Logger is already initialized. Exiting initialize_logger")
+            return
         logger = logging.getLogger(log_name)
         logger.setLevel(logging.DEBUG)
         # create file handler which logs even debug messages

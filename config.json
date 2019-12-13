@@ -1,3 +1,5 @@
 {
-  "Yelp_Token":  "Your Yelp Devleoper Token Here"
+  "yelpToken":  "Your Yelp Developer Token Goes Here",
+  "yelpSearchUrl": "https://api.yelp.com/v3/businesses/search?location=Toronto&limit={}&offset={}",
+  "yelpReviewUrl": "https://api.yelp.com/v3/businesses/{}/reviews"
 }

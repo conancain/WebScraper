@@ -46,8 +46,8 @@ class YelpFusion:
             # Only proceed if the response code is 200 (SUCCESS)
             if response.status_code == 200:
                 response_json = response.json()
-                for business in response_json["businesses"]:
-                    business_id = business["id"]
+                for business in response_json[BUSINESSES]:
+                    business_id = business[ID]
                     if business_id not in self.businesses_set:
                         # Add each business' UID to set
                         self.businesses_set.add(business_id)
@@ -72,7 +72,6 @@ class YelpFusion:
                 response_json = response.json()
                 for review in response_json["reviews"]:
                     review_full_url = review["url"]
-
             else:
                 YelpRequestHelper.log_request_error(yelp_review_url, response)
 

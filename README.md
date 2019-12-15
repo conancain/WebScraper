@@ -1,2 +1,2 @@
 # WebScraper
-Web Scraper POC
+This project will extract full text Yelp Reviews for restruants in Toronto

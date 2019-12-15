@@ -90,6 +90,11 @@ class YelpFusion:
 
         while not is_review_page_empty:
             logger.info("current_review_offset: {}".format(current_review_offset))
+            if current_review_offset > MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS:
+                logger.info("current_review_offset is greater than "
+                            "MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS: {}".format(
+                                MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS))
+                break
             clean_url_with_page = clean_url.format(current_review_offset)
             response = requests.get(clean_url_with_page)
             if response.status_code == 200:

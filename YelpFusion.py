@@ -11,12 +11,15 @@ import logging
 from pprint import pprint
 import bs4
 from bs4 import BeautifulSoup
+import urllib
+from urllib.parse import urlparse
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from YelpRequestHelper import *
 
 YELP_SEARCH_API_STEP = 50
+YELP_REVIEW_PAGE_STEP = 20
 
 
 class YelpFusion:
@@ -76,17 +79,46 @@ class YelpFusion:
                 logger.error("Response code is: {}".format(response.status_code))
                 logger.error("Response: {}".format(response))
 
-    business_full_text_review = {}
-    def get_full_text_review(self, full_text_review_url):
-        response = requests.get(full_text_review_url)
-        if response.status_code == 200:
-            beautiful_soup = BeautifulSoup(response.content, "lxml")
-            aggregate_rating = beautiful_soup.find("script", {"type": "application/ld+json"}).contents[0]
-            aggregate_rating_json = json.loads(aggregate_rating)
-            logger.info(aggregate_rating)
-            pass
-        pass
 
+    def get_full_text_review(self, full_text_review_url):
+        o = urlparse(full_text_review_url)
+        clean_url = urllib.parse.urlunparse(o._replace(query="start={}"))
+        current_review_offset = 1560
+        is_review_page_empty = False
+        business_full_text_review: json = None
+
+        while not is_review_page_empty:
+            logger.info("current_review_offset: {}".format(current_review_offset))
+            clean_url_with_page = clean_url.format(current_review_offset)
+            response = requests.get(clean_url_with_page)
+            if response.status_code == 200:
+                beautiful_soup = BeautifulSoup(response.content, "lxml")
+                aggregate_rating = beautiful_soup.find("script", {"type": "application/ld+json"}).contents[0]
+                aggregate_rating_json = json.loads(aggregate_rating)
+                if not business_full_text_review:
+                    business_full_text_review = aggregate_rating_json
+                else:
+                    business_full_text_review["review"].extend(aggregate_rating_json["review"])
+                if len(aggregate_rating_json["review"]) == 0:
+                    is_review_page_empty = True
+                logger.info(aggregate_rating)
+                current_review_offset += YELP_REVIEW_PAGE_STEP
+                pass
+        with open(os.path.join(os.path.dirname(__file__), "output.json"), 'w') as outfile:
+            json.dump(business_full_text_review, outfile)
+        self.transform_output(business_full_text_review)
+
+    def transform_output(self, raw_review_json: json):
+        result = []
+        with open(os.path.join(os.path.dirname(__file__), "data.json"), 'w') as outfile:
+            for review in raw_review_json["review"]:
+                rating_value = review["reviewRating"]["ratingValue"]
+                if rating_value > 3:
+                    rating = "positive"
+                else:
+                    rating = "negative"
+                result.append([review["description"], rating])
+            json.dump(result, outfile)
 
 if __name__ == '__main__':
     t = YelpFusion()

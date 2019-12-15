@@ -20,3 +20,9 @@ class YelpRequestHelper:
     def get_search_url(limit: int = 50, offset: int = 0) -> str:
         yelp_search_url = EnvironmentInit.get_yelp_search_url()
         return yelp_search_url.format(limit, offset)
+
+    @staticmethod
+    def log_request_error(clean_url_with_page, response):
+        logger.error("HTTP Error while requesting for: {}".format(clean_url_with_page))
+        logger.error("Response code is: {}".format(response.status_code))
+        logger.error("Response: {}".format(response))

@@ -52,9 +52,7 @@ class YelpFusion:
                         # Add each business' UID to set
                         self.businesses_set.add(business_id)
             else:
-                logger.error("HTTP Error while requesting for: {}".format(search_url))
-                logger.error("Response code is: {}".format(response.status_code))
-                logger.error("Response: {}".format(response))
+                YelpRequestHelper.log_request_error(search_url, response)
 
             # Once the businesses' UID are added to the set, set the offset to the length of the unique ID already exist
             self.current_offset = len(self.businesses_set)
@@ -76,10 +74,7 @@ class YelpFusion:
                     review_full_url = review["url"]
 
             else:
-                logger.error("HTTP Error while requesting for: {}".format(yelp_review_url))
-                logger.error("Response code is: {}".format(response.status_code))
-                logger.error("Response: {}".format(response))
-
+                YelpRequestHelper.log_request_error(yelp_review_url, response)
 
     def get_full_text_review(self, full_text_review_url):
         o = urlparse(full_text_review_url)
@@ -90,7 +85,7 @@ class YelpFusion:
 
         while not is_review_page_empty:
             logger.info("current_review_offset: {}".format(current_review_offset))
-            if current_review_offset > MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS:
+            if current_review_offset >= MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS:
                 logger.info("current_review_offset is greater than "
                             "MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS: {}".format(
                                 MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS))
@@ -109,7 +104,8 @@ class YelpFusion:
                     is_review_page_empty = True
                 logger.info(aggregate_rating)
                 current_review_offset += YELP_REVIEW_PAGE_STEP
-                pass
+            else:
+                YelpRequestHelper.log_request_error(clean_url_with_page, response)
         with open(os.path.join(os.path.dirname(__file__), "output.json"), 'w') as outfile:
             json.dump(business_full_text_review, outfile, indent=4)
         self.transform_output(business_full_text_review)

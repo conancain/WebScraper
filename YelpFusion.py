@@ -83,7 +83,7 @@ class YelpFusion:
     def get_full_text_review(self, full_text_review_url):
         o = urlparse(full_text_review_url)
         clean_url = urllib.parse.urlunparse(o._replace(query="start={}"))
-        current_review_offset = 1560
+        current_review_offset = 0
         is_review_page_empty = False
         business_full_text_review: json = None
 
@@ -105,7 +105,7 @@ class YelpFusion:
                 current_review_offset += YELP_REVIEW_PAGE_STEP
                 pass
         with open(os.path.join(os.path.dirname(__file__), "output.json"), 'w') as outfile:
-            json.dump(business_full_text_review, outfile)
+            json.dump(business_full_text_review, outfile, indent=4)
         self.transform_output(business_full_text_review)
 
     def transform_output(self, raw_review_json: json):
@@ -118,7 +118,7 @@ class YelpFusion:
                 else:
                     rating = "negative"
                 result.append([review["description"], rating])
-            json.dump(result, outfile)
+            json.dump(result, outfile, indent=4)
 
 if __name__ == '__main__':
     t = YelpFusion()

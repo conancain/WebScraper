@@ -28,6 +28,10 @@ class EnvironmentInitTests(unittest.TestCase):
         result = self.environment_init.get_number_of_business_to_scrape()
         self.assertEqual(result, 1)
 
+    def test_max_number_of_reviews_to_get_per_business(self):
+        result = self.environment_init.get_max_number_of_reviews_to_get_per_business()
+        self.assertEqual(result, 500)
+
 
 if __name__ == '__main__':
     unittest.main()

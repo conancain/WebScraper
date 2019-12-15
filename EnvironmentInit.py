@@ -15,12 +15,13 @@ YELP_TOKEN_KEY = "yelpToken"
 YELP_SEARCH_URL_KEY = "yelpSearchUrl"
 YELP_REVIEWS_URL_KEY = "yelpReviewsUrl"
 NUMBER_OF_BUSINESS_TO_SCRAPE_KEY = "numberOfBusinessToScrape"
+MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS_KEY = "maxNumberOfReviewsToGetPerBusiness"
 
 YELP_TOKEN: str
 YELP_SEARCH_URL: str
 YELP_REVIEWS_URL: str
 NUMBER_OF_BUSINESS_TO_SCRAPE: int
-
+MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS: int
 
 class EnvironmentInit:
 
@@ -46,6 +47,10 @@ class EnvironmentInit:
             if NUMBER_OF_BUSINESS_TO_SCRAPE_KEY in _config_json:
                 NUMBER_OF_BUSINESS_TO_SCRAPE = _config_json[NUMBER_OF_BUSINESS_TO_SCRAPE_KEY]
 
+            global MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS
+            if MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS_KEY in _config_json:
+                MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS = _config_json[MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS_KEY]
+
         logger.info("EnvironmentInit: _config_json: {}".format(_config_json))
 
     @staticmethod
@@ -63,6 +68,10 @@ class EnvironmentInit:
     @staticmethod
     def get_number_of_business_to_scrape() -> int:
         return NUMBER_OF_BUSINESS_TO_SCRAPE
+
+    @staticmethod
+    def get_max_number_of_reviews_to_get_per_business() -> int:
+        return MAX_NUMBER_OF_REVIEWS_TO_GET_PER_BUSINESS
 
     @staticmethod
     def initialize_logger(logging_directory: os.path, log_name: str):

@@ -17,6 +17,7 @@ from urllib.parse import urlparse
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from YelpRequestHelper import *
+from YelpJsonKeys import *
 
 YELP_SEARCH_API_STEP = 50
 YELP_REVIEW_PAGE_STEP = 20
@@ -98,8 +99,8 @@ class YelpFusion:
                 if not business_full_text_review:
                     business_full_text_review = aggregate_rating_json
                 else:
-                    business_full_text_review["review"].extend(aggregate_rating_json["review"])
-                if len(aggregate_rating_json["review"]) == 0:
+                    business_full_text_review[REVIEW].extend(aggregate_rating_json[REVIEW])
+                if len(aggregate_rating_json[REVIEW]) == 0:
                     is_review_page_empty = True
                 logger.info(aggregate_rating)
                 current_review_offset += YELP_REVIEW_PAGE_STEP
@@ -111,14 +112,15 @@ class YelpFusion:
     def transform_output(self, raw_review_json: json):
         result = []
         with open(os.path.join(os.path.dirname(__file__), "data.json"), 'w') as outfile:
-            for review in raw_review_json["review"]:
-                rating_value = review["reviewRating"]["ratingValue"]
+            for review in raw_review_json[REVIEW]:
+                rating_value = review[REVIEW_RATING][RATING_VALUE]
                 if rating_value > 3:
                     rating = "positive"
                 else:
                     rating = "negative"
-                result.append([review["description"], rating])
+                result.append([review[DESCRIPTION], rating])
             json.dump(result, outfile, indent=4)
+
 
 if __name__ == '__main__':
     t = YelpFusion()
